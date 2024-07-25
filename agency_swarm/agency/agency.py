@@ -198,7 +198,7 @@ class Agency:
                 event_handler.on_all_streams_end()
                 return e.value
 
-    def demo_gradio(self, height=450, dark_mode=True, **kwargs):
+    def demo_gradio(self, height=600, dark_mode=True, **kwargs):
         """
         Launches a Gradio-based demo interface for the agency chatbot.
 
@@ -229,18 +229,18 @@ class Agency:
         attachments = []
         images = []
         message_file_names = None
-        uploading_files = False
+        uploading_files = True
         recipient_agents = [agent.name for agent in self.main_recipients]
         recipient_agent = self.main_recipients[0]
 
         with gr.Blocks(js=js) as demo:
             chatbot_queue = queue.Queue()
-            chatbot = gr.Chatbot(height=height)
+            chatbot = gr.Chatbot(height=height, container=True, layout='bubble')
             with gr.Row():
-                with gr.Column(scale=9):
+                with gr.Column(scale=9,show_progress=True):
                     dropdown = gr.Dropdown(label="Recipient Agent", choices=recipient_agents,
                                            value=recipient_agent.name)
-                    msg = gr.Textbox(label="Your Message", lines=4)
+                    msg = gr.Textbox(label="Your Message", lines=4, autoscroll=True)
                 with gr.Column(scale=1):
                     file_upload = gr.Files(label="OpenAI Files", type="filepath")
             button = gr.Button(value="Send", variant="primary")
@@ -530,7 +530,7 @@ class Agency:
             )
             dropdown.change(handle_dropdown_change, dropdown)
             file_upload.change(handle_file_upload, file_upload)
-            msg.submit(user, [msg, chatbot], [msg, chatbot], queue=False).then(
+            msg.submit(user, [msg, chatbot], [msg, chatbot], queue=False, scroll_to_output=True).then(
                 bot, [msg, chatbot], [msg, chatbot]
             )
 

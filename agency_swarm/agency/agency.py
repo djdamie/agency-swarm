@@ -49,7 +49,7 @@ class Agency:
                  agency_chart: List,
                  shared_instructions: str = "",
                  shared_files: Union[str, List[str]] = None,
-                 async_mode: Literal['threading'] = None,
+                 async_mode: Literal['threading', "tools_threading"] = None,
                  settings_path: str = "./settings.json",
                  settings_callbacks: SettingsCallbacks = None,
                  threads_callbacks: ThreadsCallbacks = None,
@@ -66,7 +66,7 @@ class Agency:
             agency_chart: The structure defining the hierarchy and interaction of agents within the agency.
             shared_instructions (str, optional): A path to a file containing shared instructions for all agents. Defaults to an empty string.
             shared_files (Union[str, List[str]], optional): A path to a folder or a list of folders containing shared files for all agents. Defaults to None.
-            async_mode (str, optional): The mode for asynchronous message processing. Defaults to None.
+            async_mode (str, optional): Specifies the mode for asynchronous processing. In "threading" mode, all sub-agents run in separate threads. In "tools_threading" mode, all tools run in separate threads, but agents do not. Defaults to None.
             settings_path (str, optional): The path to the settings file for the agency. Must be json. If file does not exist, it will be created. Defaults to None.
             settings_callbacks (SettingsCallbacks, optional): A dictionary containing functions to load and save settings for the agency. The keys must be "load" and "save". Both values must be defined. Defaults to None.
             threads_callbacks (ThreadsCallbacks, optional): A dictionary containing functions to load and save threads for the agency. The keys must be "load" and "save". Both values must be defined. Defaults to None.
@@ -78,11 +78,6 @@ class Agency:
 
         This constructor initializes various components of the Agency, including CEO, agents, threads, and user interactions. It parses the agency chart to set up the organizational structure and initializes the messaging tools, agents, and threads necessary for the operation of the agency. Additionally, it prepares a main thread for user interactions.
         """
-        self.async_mode = async_mode
-        if self.async_mode == "threading":
-            from agency_swarm.threads.thread_async import ThreadAsync
-            self.ThreadType = ThreadAsync
-
         self.ceo = None
         self.user = User()
         self.agents = []
@@ -91,6 +86,7 @@ class Agency:
         self.main_thread = None
         self.recipient_agents = None  # for autocomplete
         self.shared_files = shared_files if shared_files else []
+        self.async_mode = async_mode
         self.settings_path = settings_path
         self.settings_callbacks = settings_callbacks
         self.threads_callbacks = threads_callbacks
@@ -99,6 +95,16 @@ class Agency:
         self.max_prompt_tokens = max_prompt_tokens
         self.max_completion_tokens = max_completion_tokens
         self.truncation_strategy = truncation_strategy
+
+        if self.async_mode == "threading":
+            from agency_swarm.threads.thread_async import ThreadAsync
+            self.ThreadType = ThreadAsync
+        elif self.async_mode == "tools_threading":
+            Thread.async_mode = self.async_mode
+        elif self.async_mode is None:
+            pass
+        else:
+            raise Exception("Please select async_mode = 'threading' or 'tools_threading'.")
 
         if os.path.isfile(os.path.join(self._get_class_folder_path(), shared_instructions)):
             self._read_instructions(os.path.join(self._get_class_folder_path(), shared_instructions))
@@ -121,7 +127,7 @@ class Agency:
                        additional_instructions: str = None,
                        attachments: List[dict] = None,
                        tool_choice: dict = None,
-                       ):
+                       verbose: bool = False):
         """
         Retrieves the completion for a given message from the main thread.
 
@@ -133,22 +139,28 @@ class Agency:
             additional_instructions (str, optional): Additional instructions to be sent with the message. Defaults to None.
             attachments (List[dict], optional): A list of attachments to be sent with the message, following openai format. Defaults to None.
             tool_choice (dict, optional): The tool choice for the recipient agent to use. Defaults to None.
+            parallel_tool_calls (bool, optional): Whether to enable parallel function calling during tool use. Defaults to True.
+            verbose (bool, optional): Whether to print the intermediary messages in console. Defaults to False.
 
         Returns:
             Generator or final response: Depending on the 'yield_messages' flag, this method returns either a generator yielding intermediate messages or the final response from the main thread.
         """
+        if verbose and yield_messages:
+            raise Exception("Verbose mode is not compatible with yield_messages=True")
+        
         res = self.main_thread.get_completion(message=message,
                                                message_files=message_files,
                                                attachments=attachments,
                                                recipient_agent=recipient_agent,
                                                additional_instructions=additional_instructions,
                                                tool_choice=tool_choice,
-                                               yield_messages=yield_messages)
-
-        if not yield_messages:
+                                               yield_messages=yield_messages or verbose)
+        if not yield_messages or verbose:
             while True:
                 try:
-                    next(res)
+                    message = next(res)
+                    if verbose:
+                        message.cprint()
                 except StopIteration as e:
                     return e.value
 
@@ -162,8 +174,7 @@ class Agency:
                               recipient_agent: Agent = None,
                               additional_instructions: str = None,
                               attachments: List[dict] = None,
-                              tool_choice: dict = None
-                              ):
+                              tool_choice: dict = None):
         """
         Generates a stream of completions for a given message from the main thread.
 
@@ -175,6 +186,7 @@ class Agency:
             additional_instructions (str, optional): Additional instructions to be sent with the message. Defaults to None.
             attachments (List[dict], optional): A list of attachments to be sent with the message, following openai format. Defaults to None.
             tool_choice (dict, optional): The tool choice for the recipient agent to use. Defaults to None.
+            parallel_tool_calls (bool, optional): Whether to enable parallel function calling during tool use. Defaults to True.
 
         Returns:
             Final response: Final response from the main thread.
@@ -188,8 +200,7 @@ class Agency:
                                                       attachments=attachments,
                                                       recipient_agent=recipient_agent,
                                                       additional_instructions=additional_instructions,
-                                                      tool_choice=tool_choice
-                                                      )
+                                                      tool_choice=tool_choice)
 
         while True:
             try:
@@ -535,7 +546,7 @@ class Agency:
             )
 
             # Enable queuing for streaming intermediate outputs
-            demo.queue()
+            demo.queue(default_concurrency_limit=10)
 
         # Launch the demo
         demo.launch(**kwargs)
@@ -939,7 +950,7 @@ class Agency:
                 continue
             agent = self._get_agent_by_name(agent_name)
             agent.add_tool(self._create_send_message_tool(agent, recipient_agents))
-            if self.async_mode:
+            if self.async_mode == 'threading':
                 agent.add_tool(self._create_get_response_tool(agent, recipient_agents))
 
     def _create_send_message_tool(self, agent: Agent, recipient_agents: List[Agent]):
@@ -985,7 +996,6 @@ class Agency:
                                                        examples=["file-1234", "file-5678"])
             additional_instructions: str = Field(default=None,
                                                  description="Any additional instructions or clarifications that you would like to provide to the recipient agent.")
-            one_call_at_a_time: bool = True
 
             @model_validator(mode='after')
             def validate_files(self):
@@ -1003,12 +1013,13 @@ class Agency:
             def run(self):
                 thread = outer_self.agents_and_threads[self.caller_agent.name][self.recipient.value]
 
-                if not outer_self.async_mode:
+                if not outer_self.async_mode == 'threading':
                     message = thread.get_completion(message=self.message,
                                                     message_files=self.message_files,
                                                     event_handler=self.event_handler,
                                                     yield_messages=not self.event_handler,
-                                                    additional_instructions=self.additional_instructions)
+                                                    additional_instructions=self.additional_instructions,
+                                                    )
                 else:
                     message = thread.get_completion_async(message=self.message,
                                                           message_files=self.message_files,
@@ -1017,10 +1028,12 @@ class Agency:
                 return message or ""
 
         SendMessage.caller_agent = agent
-        if self.async_mode:
+        if self.async_mode == 'threading':
             SendMessage.__doc__ = self.send_message_tool_description_async
+            SendMessage.one_call_at_a_time = False
         else:
             SendMessage.__doc__ = self.send_message_tool_description
+            SendMessage.one_call_at_a_time = True
 
         return SendMessage
 

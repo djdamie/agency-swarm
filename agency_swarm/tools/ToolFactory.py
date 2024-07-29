@@ -20,6 +20,8 @@ from datamodel_code_generator import DataModelType, PythonVersion
 from datamodel_code_generator.model import get_data_model_types
 from datamodel_code_generator.parser.jsonschema import JsonSchemaParser
 
+import httpx
+import asyncio
 
 class ToolFactory:
 
@@ -144,9 +146,10 @@ class ToolFactory:
             openapi_spec = jsonref.loads(schema)
         tools = []
         headers = headers or {}
+        headers = {k: v for k, v in headers.items() if v is not None}
         for path, methods in openapi_spec["paths"].items():
             for method, spec_with_ref in methods.items():
-                def callback(self):
+                async def callback(self):
                     url = openapi_spec["servers"][0]["url"] + path
                     parameters = self.model_dump().get('parameters', {})
                     # replace all parameters in url
@@ -157,28 +160,25 @@ class ToolFactory:
                     url = url.rstrip("/")
                     parameters = {k: v for k, v in parameters.items() if v is not None}
                     parameters = {**parameters, **params} if params else parameters
-                    if method == "get":
-                        return requests.get(url, params=parameters, headers=headers,
-                                            json=self.model_dump().get('requestBody', None)
-                                            ).json()
-                    elif method == "post":
-                        return requests.post(url,
-                                             params=parameters,
-                                             json=self.model_dump().get('requestBody', None),
-                                             headers=headers
-                                             ).json()
-                    elif method == "put":
-                        return requests.put(url,
-                                            params=parameters,
-                                            json=self.model_dump().get('requestBody', None),
-                                            headers=headers
-                                            ).json()
-                    elif method == "delete":
-                        return requests.delete(url,
-                                               params=parameters,
-                                               json=self.model_dump().get('requestBody', None),
-                                               headers=headers
-                                               ).json()
+                    async with httpx.AsyncClient(timeout=90) as client:  # Set custom read timeout to 10 seconds
+                        if method == "get":
+                            response = await client.get(url, params=parameters, headers=headers)
+                        elif method == "post":
+                            response = await client.post(url,
+                                                         params=parameters,
+                                                         json=self.model_dump().get('requestBody', None),
+                                                         headers=headers)
+                        elif method == "put":
+                            response = await client.put(url,
+                                                        params=parameters,
+                                                        json=self.model_dump().get('requestBody', None),
+                                                        headers=headers)
+                        elif method == "delete":
+                            response = await client.delete(url,
+                                                           params=parameters,
+                                                           json=self.model_dump().get('requestBody', None),
+                                                           headers=headers)
+                        return response.json()
 
                 # 1. Resolve JSON references.
                 spec = jsonref.replace_refs(spec_with_ref)

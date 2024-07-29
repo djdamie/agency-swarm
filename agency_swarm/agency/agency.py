@@ -198,7 +198,7 @@ class Agency:
                 event_handler.on_all_streams_end()
                 return e.value
 
-    def demo_gradio(self, height=600, dark_mode=True, **kwargs):
+    def demo_gradio(self, height=450, dark_mode=True, **kwargs):
         """
         Launches a Gradio-based demo interface for the agency chatbot.
 
@@ -235,7 +235,7 @@ class Agency:
 
         with gr.Blocks(js=js) as demo:
             chatbot_queue = queue.Queue()
-            chatbot = gr.Chatbot(height=height, container=True, layout='bubble')
+            chatbot = gr.Chatbot(height=height, container=True)
             with gr.Row():
                 with gr.Column(scale=9,show_progress=True):
                     dropdown = gr.Dropdown(label="Recipient Agent", choices=recipient_agents,

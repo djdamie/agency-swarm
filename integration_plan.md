@@ -138,7 +138,7 @@
 ## Interface & Validation Plan
 
 ### AG-UI / Frontend Integration
-- Leverage `CopilotDemoLauncher` as reference to embed Agency into client-facing UI; replace demo agents with TF Supervisor agency factory.
+- Leverage `CopilotDemoLauncher` as reference to embed Agency into client-facing UI; replace demo agents with TF Supervisor agency factory. ✅ `tf_agents.ui.copilot.launch_copilot()` now launches the tailored Copilot experience.
 - Extend UI to surface HITL requests from context (display missing info prompts, allow user input to feed back into agency).
 - Serve UI behind existing Caddy reverse proxy; reuse Open-WebUI or dedicate AG-UI port (e.g., 8009).
 - Use `Agency.get_agency_structure()` to provide ReactFlow data for visualizing workflow inside Open-WebUI panels if desired.

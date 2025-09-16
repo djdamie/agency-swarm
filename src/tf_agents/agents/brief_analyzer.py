@@ -36,9 +36,22 @@ async def generate_brief_analysis(wrapper: RunContextWrapper, brief_text: str) -
     return content
 
 @function_tool()
-async def submit_brief_analysis(wrapper: RunContextWrapper, analysis_json: str) -> str:
-    """Persist the structured brief analysis JSON and update HITL state."""
+async def submit_brief_analysis(
+    wrapper: RunContextWrapper,
+    analysis_json: str | None = None,
+    brief_text: str | None = None,
+) -> str:
+    """Persist the structured brief analysis JSON and update HITL state.
+
+    Either provide `analysis_json` directly or pass `brief_text` to have the tool
+    call the LLM and generate the structured payload automatically.
+    """
     context = wrapper.context
+    if analysis_json is None:
+        if not brief_text:
+            return "Provide either analysis_json or brief_text."
+        analysis_json = await call_json_llm(BRIEF_ANALYZER_PROMPT, brief_text)
+
     try:
         analysis: Dict[str, Any] = json.loads(analysis_json)
     except json.JSONDecodeError as exc:
@@ -76,9 +89,8 @@ async def merge_additional_info(wrapper: RunContextWrapper, additional_info_json
 def create_brief_analyzer_agent(*, name: str = "BriefAnalyzer", **agent_kwargs) -> Agent:
     instructions = (
         BRIEF_ANALYZER_INSTRUCTIONS
-        + "\n\nUse the `generate_brief_analysis` tool to create a structured extraction."
-        + " Once validated, call `submit_brief_analysis`. If follow-up information is provided, use"
-        + " `merge_additional_info` to keep the analysis current."
+        + "\n\nUse the `submit_brief_analysis` tool with either the raw brief text (preferred) or a JSON payload."
+        + " If follow-up information is provided, use `merge_additional_info` to keep the analysis current."
     )
     return Agent(
         name=name,

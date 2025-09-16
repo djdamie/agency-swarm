@@ -17,7 +17,9 @@ Agents:
 ├── services/        # External service wrappers (optional)
 ├── config.py        # Domain constants bridged from legacy context files
 ├── prompts.py       # Prompt strings imported from legacy workflow
-└── state.py         # MasterContext helpers for workflow state
+├── state.py         # MasterContext helpers for workflow state
+├── workflow.py      # Convenience helpers to run the full workflow programmatically
+└── ui/              # Copilot launcher for conversational testing
 ```
 
 Refer to `integration_plan.md` for the full migration roadmap.

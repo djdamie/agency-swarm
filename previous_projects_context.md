@@ -72,3 +72,9 @@ The `/knowledge_base/` directory contains:
   - `tf_docs/T&F Summit 2024 - Projects.pdf`
   - `tf_docs/knowledge_base/tf_context.py`
   
+
+## Previous Agents built with Agency Swarm
+
+- i created a few agents with Agency Swarm, in the past before the framework released their latest v1.0 version. You can find the schemas in the `agent_schemas` folder.
+   - the instructions for the agents are in the `previous_agents_instructions` folder.
+- chartmetric is a huge part of how we gained musical insights. the tools are in the `Previous_Chartmetric_Tools` folder.

@@ -1,0 +1,903 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Agent Tools",
+    "description": "A collection of tools.",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://tf-scout-v4-production.up.railway.app"
+    }
+  ],
+  "paths": {
+    "/ArtistPlaylists": {
+      "post": {
+        "description": "Retrieves playlists that feature a specific artist using the Chartmetric API.\nSupports Spotify, Apple Music, Deezer, Amazon Music, and YouTube.\nReturns detailed playlist and track information with platform-specific filtering options.",
+        "operationId": "ArtistPlaylists",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "Chartmetric artist ID (from GeneralSearch)",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "platform": {
+                    "description": "Platform source: spotify, applemusic, deezer, amazon, or youtube",
+                    "enum": [
+                      "spotify",
+                      "applemusic",
+                      "deezer",
+                      "amazon",
+                      "youtube"
+                    ],
+                    "title": "Platform",
+                    "type": "string"
+                  },
+                  "status": {
+                    "description": "Playlist status: current or past",
+                    "enum": [
+                      "current",
+                      "past"
+                    ],
+                    "title": "Status",
+                    "type": "string"
+                  },
+                  "since": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "ISO date YYYY-MM-DD. Return playlists added on or after this date.",
+                    "title": "Since"
+                  },
+                  "until": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "ISO date YYYY-MM-DD. Return playlists added on or before this date.",
+                    "title": "Until"
+                  },
+                  "indie": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, playlist was curated by major labels",
+                    "title": "Indie"
+                  },
+                  "editorial": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes playlists curated by the platform",
+                    "title": "Editorial"
+                  },
+                  "majorCurator": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes playlists curated by major curators",
+                    "title": "Majorcurator"
+                  },
+                  "newMusicFriday": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Spotify only: Curated selection of new tracks",
+                    "title": "Newmusicfriday"
+                  },
+                  "editorialBrand": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Apple Music only: Playlists under editorial brands",
+                    "title": "Editorialbrand"
+                  },
+                  "personalized": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes personalized playlists",
+                    "title": "Personalized"
+                  },
+                  "deezerPartner": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Deezer only: Playlists by Deezer partners",
+                    "title": "Deezerpartner"
+                  },
+                  "chart": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes playlists based on music charts",
+                    "title": "Chart"
+                  },
+                  "thisIs": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Spotify only: 'This Is' playlists",
+                    "title": "Thisis"
+                  },
+                  "hundredPercent": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Deezer only: '100%' playlists",
+                    "title": "Hundredpercent"
+                  },
+                  "radio": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes playlists from radio stations",
+                    "title": "Radio"
+                  },
+                  "fullyPersonalized": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Spotify only: Fully personalized playlists",
+                    "title": "Fullypersonalized"
+                  },
+                  "brand": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes playlists related to brands",
+                    "title": "Brand"
+                  },
+                  "musicBrand": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Apple Music only: Music brand playlists",
+                    "title": "Musicbrand"
+                  },
+                  "nonMusicBrand": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Apple Music only: Non-music brand playlists",
+                    "title": "Nonmusicbrand"
+                  },
+                  "popularIndie": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If true, includes popular indie playlists",
+                    "title": "Popularindie"
+                  },
+                  "audiobook": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Spotify only: Audiobook playlists",
+                    "title": "Audiobook"
+                  },
+                  "personalityArtist": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Apple Music only: Personality artist playlists",
+                    "title": "Personalityartist"
+                  },
+                  "sortColumn": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Column to sort by (platform/status specific)",
+                    "title": "Sortcolumn"
+                  },
+                  "sortOrderDesc": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Sort in descending order (only with sortColumn)",
+                    "title": "Sortorderdesc"
+                  },
+                  "limit": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 10,
+                    "description": "Number of results (default: 10)",
+                    "title": "Limit"
+                  },
+                  "offset": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 0,
+                    "description": "Offset for pagination (default: 0)",
+                    "title": "Offset"
+                  }
+                },
+                "required": [
+                  "artist_id",
+                  "platform",
+                  "status"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ArtistCareerHistory": {
+      "post": {
+        "description": "This tool retrieves an artist's historical career information from the Chartmetric API.\nUnderstanding an artist's career history is important for assessing their growth and development.",
+        "operationId": "ArtistCareerHistory",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "Chartmetric artist ID.",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "since": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Start of the date range in ISO date format (e.g., '2023-05-12').",
+                    "title": "Since"
+                  },
+                  "until": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "End of the date range in ISO date format (e.g., '2025-01-01'). Default is today.",
+                    "title": "Until"
+                  },
+                  "limit": {
+                    "default": 10,
+                    "description": "The number of entries to be returned. Default is 10.",
+                    "title": "Limit",
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "default": 0,
+                    "description": "The offset of entries to be returned. Default is 0.",
+                    "title": "Offset",
+                    "type": "integer"
+                  },
+                  "base_url": {
+                    "default": "https://api.chartmetric.com/api",
+                    "description": "The base URL for the Chartmetric API.",
+                    "title": "Base Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "artist_id"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/SocialAudienceStats": {
+      "post": {
+        "description": "Tool to fetch social audience stats for an artist from Chartmetric API.\nSupports platforms like Instagram, YouTube, and TikTok.",
+        "operationId": "SocialAudienceStats",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "Artist's Chartmetric ID.",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "domain": {
+                    "description": "Social platform to fetch data from.",
+                    "enum": [
+                      "instagram",
+                      "youtube",
+                      "tiktok"
+                    ],
+                    "title": "Domain",
+                    "type": "string"
+                  },
+                  "since": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Beginning date in ISO date format. Defaults to today.",
+                    "title": "Since"
+                  },
+                  "until": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "End date in ISO date format. Defaults to today.",
+                    "title": "Until"
+                  },
+                  "audienceType": {
+                    "description": "Specific audience type from source.",
+                    "enum": [
+                      "followers",
+                      "likes",
+                      "commenters"
+                    ],
+                    "title": "Audiencetype",
+                    "type": "string"
+                  },
+                  "statsType": {
+                    "description": "Specific stat type from source.",
+                    "enum": [
+                      "country",
+                      "city",
+                      "interest",
+                      "brand",
+                      "language",
+                      "stat",
+                      "demographic"
+                    ],
+                    "title": "Statstype",
+                    "type": "string"
+                  },
+                  "offset": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 0,
+                    "description": "The offset of entries to be returned.",
+                    "title": "Offset"
+                  },
+                  "limit": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 50,
+                    "description": "The number of entries to be returned.",
+                    "title": "Limit"
+                  }
+                },
+                "required": [
+                  "artist_id",
+                  "audienceType",
+                  "domain",
+                  "statsType"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ArtistTopTracks": {
+      "post": {
+        "description": "Retrieves key track statistics for a given artist using the Chartmetric API.\nSupports filtering by artist role (main or featured), basic pagination,\nand optional auto-paging with sorting to find top tracks by streams or popularity.\nReturns a minimal summary of selected fields to conserve context tokens.",
+        "operationId": "ArtistTopTracks",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "Chartmetric artist ID (from GeneralSearch)",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "artist_type": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "main",
+                          "featured"
+                        ],
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "Filter by artist role on track: 'main' or 'featured' (omit for both)",
+                    "title": "Artist Type"
+                  },
+                  "limit": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 10,
+                    "description": "Number of top tracks to return when sorting, or max entries when not sorting (default: 10)",
+                    "title": "Limit"
+                  },
+                  "offset": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 0,
+                    "description": "Offset for pagination (default: 0)",
+                    "title": "Offset"
+                  },
+                  "sort_by": {
+                    "anyOf": [
+                      {
+                        "enum": [
+                          "streams",
+                          "popularity"
+                        ],
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "If set, auto-pages through all tracks and returns top N by 'streams' or 'popularity' desc",
+                    "title": "Sort By"
+                  }
+                },
+                "required": [
+                  "artist_id"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GeneralSearch": {
+      "post": {
+        "description": "Tool to perform general searches using the Chartmetric API search endpoint.\nCan search across multiple entity types including artists, tracks, albums, playlists,\ncurators, stations, cities, and songwriters.",
+        "operationId": "GeneralSearch",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "q": {
+                    "description": "The search query (can also search full URLs).",
+                    "title": "Q",
+                    "type": "string"
+                  },
+                  "type": {
+                    "default": "all",
+                    "description": "Type of search to perform. Options: all, artists, tracks, albums, playlists, curators, stations, cities, songwriters",
+                    "enum": [
+                      "all",
+                      "artists",
+                      "tracks",
+                      "albums",
+                      "playlists",
+                      "curators",
+                      "stations",
+                      "cities",
+                      "songwriters"
+                    ],
+                    "title": "Type",
+                    "type": "string"
+                  },
+                  "limit": {
+                    "default": 10,
+                    "description": "The number of results to return. Default is 10.",
+                    "title": "Limit",
+                    "type": "integer"
+                  },
+                  "offset": {
+                    "default": 0,
+                    "description": "The offset for pagination. Default is 0.",
+                    "title": "Offset",
+                    "type": "integer"
+                  },
+                  "base_url": {
+                    "default": "https://api.chartmetric.com/api",
+                    "description": "The base URL for the Chartmetric API.",
+                    "title": "Base Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "q"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ArtistCityListeners": {
+      "post": {
+        "description": "Tool to retrieve an artist's Spotify listeners by city using Chartmetric's \"Where people listen\" stats.\nReturns data for top 50 cities on each day.",
+        "operationId": "ArtistCityListeners",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "The Chartmetric artist ID to retrieve city listener data for",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "since": {
+                    "description": "Beginning date in ISO date format (e.g. '2017-03-25'). Required parameter.",
+                    "title": "Since",
+                    "type": "string"
+                  },
+                  "until": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null,
+                    "description": "End date in ISO date format (e.g. '2017-03-25'). Defaults to today if not specified.",
+                    "title": "Until"
+                  },
+                  "limit": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 10,
+                    "description": "The number of entries to return (default 10, max 50)",
+                    "title": "Limit"
+                  },
+                  "offset": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": 0,
+                    "description": "The offset of entries to be returned",
+                    "title": "Offset"
+                  },
+                  "latest": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": false,
+                    "description": "If true, returns latest data point available regardless of date. If true, since/until parameters will be ignored.",
+                    "title": "Latest"
+                  },
+                  "base_url": {
+                    "default": "https://api.chartmetric.com/api",
+                    "description": "The base URL for the Chartmetric API.",
+                    "title": "Base Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "artist_id",
+                  "since"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ArtistFanMetrics": {
+      "post": {
+        "description": "Tool to retrieve fan metrics for an artist from Chartmetric API.\nFetches detailed fan engagement and growth metrics for specific platforms/sources.\nUses the /artist/:id/stat/:source endpoint for each requested platform.",
+        "operationId": "ArtistFanMetrics",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "The Chartmetric artist ID to retrieve fan metrics for.",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "since": {
+                    "description": "Start date for the metrics in YYYY-MM-DD format.",
+                    "title": "Since",
+                    "type": "string"
+                  },
+                  "until": {
+                    "description": "End date for the metrics in YYYY-MM-DD format.",
+                    "title": "Until",
+                    "type": "string"
+                  },
+                  "sources": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": "spotify",
+                    "description": "Comma-separated list of sources: spotify, deezer, facebook, twitter, instagram, youtube_channel, youtube_artist, wikipedia, bandsintown, soundcloud, tiktok, twitch",
+                    "title": "Sources"
+                  },
+                  "base_url": {
+                    "default": "https://api.chartmetric.com/api",
+                    "description": "The base URL for the Chartmetric API.",
+                    "title": "Base Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "artist_id",
+                  "since",
+                  "until"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ArtistMetadata": {
+      "post": {
+        "description": "Tool to retrieve comprehensive artist metadata from Chartmetric API.\nProvides detailed information about an artist including platform performance,\nsocial media metrics, audience demographics, and more.",
+        "operationId": "ArtistMetadata",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "artist_id": {
+                    "description": "The Chartmetric artist ID to retrieve metadata for.",
+                    "title": "Artist Id",
+                    "type": "integer"
+                  },
+                  "base_url": {
+                    "default": "https://api.chartmetric.com/api",
+                    "description": "The base URL for the Chartmetric API.",
+                    "title": "Base Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "artist_id"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey"
+      }
+    }
+  }
+}

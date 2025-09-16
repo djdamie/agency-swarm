@@ -1,0 +1,13 @@
+Budget,Margin,
+0-1500,100%,Library Blanket Deals
+1500-30000,50%,
+30000-100000,25%,
+100000-250000,20%,
+>500000,10%,
+,,
+Custom Budget,,
+Client 1 ,15%,
+Client 2,10000 flat fee,
+Client 3 ,Hourly (with estimates),
+Client 4 ,,
+(we will need to be able to manually check that also),,

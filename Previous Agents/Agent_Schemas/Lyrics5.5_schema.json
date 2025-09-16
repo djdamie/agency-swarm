@@ -1,0 +1,243 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Agent Tools",
+    "description": "A collection of tools.",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://tf-scout-v4-production.up.railway.app"
+    }
+  ],
+  "paths": {
+    "/PerplexityLyricsResearch": {
+      "post": {
+        "description": "Uses Perplexity AI to conduct in-depth research about song lyrics.\nThis tool can analyze lyrical themes, interpret metaphors, provide historical context,\nidentify literary devices, and answer specific questions about lyrics.",
+        "operationId": "PerplexityLyricsResearch",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "research_query": {
+                    "description": "The research question or task about lyrics (e.g., 'Analyze the metaphors in Bohemian Rhapsody', 'What literary devices does Bob Dylan use in Blowin' in the Wind?')",
+                    "title": "Research Query",
+                    "type": "string"
+                  },
+                  "depth": {
+                    "default": "medium",
+                    "description": "Research depth: 'brief', 'medium', or 'deep'. Deep research uses the more comprehensive sonar-deep-research model but takes longer.",
+                    "title": "Depth",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "research_query"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/BeautifulSoupScrapeLyrics": {
+      "post": {
+        "description": "Fetches a Genius lyrics page and extracts the lyrics using BeautifulSoup. Returns the lyrics as plain text.\nCan be used with FirecrawlFindLyricsURL to get the URL, then pass it to this tool for extraction.",
+        "operationId": "BeautifulSoupScrapeLyrics",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "url": {
+                    "description": "URL of a Genius lyrics page",
+                    "title": "Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/PerplexitySimilarSongs": {
+      "post": {
+        "description": "Uses Perplexity AI to research and find songs similar to a given song based on specified criteria.\nThis tool provides in-depth analysis and comparison between songs, including lyrical themes,\nmusical style, chord progressions, and more.",
+        "operationId": "PerplexitySimilarSongs",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "song_title": {
+                    "description": "The title of the reference song.",
+                    "title": "Song Title",
+                    "type": "string"
+                  },
+                  "artist": {
+                    "description": "The artist of the reference song.",
+                    "title": "Artist",
+                    "type": "string"
+                  },
+                  "similarity_criteria": {
+                    "default": "lyrical themes and style",
+                    "description": "Criteria for similarity (e.g., 'lyrical themes', 'chord progression', 'musical style', 'same era', etc.)",
+                    "title": "Similarity Criteria",
+                    "type": "string"
+                  },
+                  "limit": {
+                    "default": 5,
+                    "description": "Number of similar songs to return.",
+                    "maximum": 10,
+                    "minimum": 1,
+                    "title": "Limit",
+                    "type": "integer"
+                  },
+                  "include_analysis": {
+                    "default": true,
+                    "description": "Whether to include detailed analysis of why songs are similar.",
+                    "title": "Include Analysis",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "artist",
+                  "song_title"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/FirecrawlFindLyricsURL": {
+      "post": {
+        "description": "Searches for a lyrics-page URL (preferring genius.com or azlyrics.com).\nReturns the URL of the best candidate, or an error string.",
+        "operationId": "FirecrawlFindLyricsURL",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "query": {
+                    "description": "e.g. 'Tame Impala Elephant lyrics'",
+                    "title": "Query",
+                    "type": "string"
+                  },
+                  "limit": {
+                    "default": 3,
+                    "description": "How many results to consider",
+                    "title": "Limit",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/SearchGeniusSongs": {
+      "post": {
+        "description": "A tool to search for songs using the Genius API.",
+        "operationId": "SearchGeniusSongs",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "title": {
+                    "description": "The title of the song to search for.",
+                    "title": "Title",
+                    "type": "string"
+                  },
+                  "artist": {
+                    "default": null,
+                    "description": "The name of the artist (optional).",
+                    "title": "Artist",
+                    "type": "string"
+                  },
+                  "per_page": {
+                    "default": 50,
+                    "description": "Number of results to return per page (max 50).",
+                    "maximum": 50,
+                    "minimum": 1,
+                    "title": "Per Page",
+                    "type": "integer"
+                  },
+                  "page": {
+                    "default": 1,
+                    "description": "Page number of the results.",
+                    "title": "Page",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "title"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/FirecrawlScrapeLyrics": {
+      "post": {
+        "description": "Given a genius.com or azlyrics.com URL, print all content blocks for debugging (mobile emulation enabled).",
+        "operationId": "FirecrawlScrapeLyrics",
+        "x-openai-isConsequential": false,
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "url": {
+                    "description": "URL of a lyrics page",
+                    "title": "Url",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey"
+      }
+    }
+  }
+}

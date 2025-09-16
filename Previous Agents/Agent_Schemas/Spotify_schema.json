@@ -1,0 +1,324 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "Agent Tools",
+      "description": "A collection of tools.",
+      "version": "v1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://tf-scout-v4-production.up.railway.app"
+      }
+    ],
+    "paths": {
+      "/SpotifySearchTool": {
+        "post": {
+          "description": "A comprehensive search tool for Spotify that can search across multiple types of content.\nSupports searching for tracks, albums, artists, playlists, shows, episodes, and audiobooks.\nUses client credentials flow (no user auth required).",
+          "operationId": "SpotifySearchTool",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "query": {
+                      "description": "The search query string. You can narrow down your search using field filters like artist:, album:, track:, year:, etc.",
+                      "title": "Query",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "A list of item types to search across. Valid values: 'album', 'artist', 'playlist', 'track', 'show', 'episode', 'audiobook'",
+                      "items": {
+                        "type": "string"
+                      },
+                      "title": "Type",
+                      "type": "array"
+                    },
+                    "market": {
+                      "default": "US",
+                      "description": "An ISO 3166-1 alpha-2 country code representing the market to search in.",
+                      "title": "Market",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "default": 10,
+                      "description": "Maximum number of results to return per type. Range: 0-50",
+                      "maximum": 50,
+                      "minimum": 0,
+                      "title": "Limit",
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "description": "The index of the first result to return. Maximum: 1000",
+                      "maximum": 1000,
+                      "minimum": 0,
+                      "title": "Offset",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "query",
+                    "type"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/GetSpotifyPlaylistTracks": {
+        "post": {
+          "description": "Get full details of the items (tracks) of a Spotify playlist.\nThis tool retrieves tracks from a specified playlist using the Spotify Web API.\nSupports both public playlists (no auth needed) and private playlists (requires user auth).",
+          "operationId": "GetSpotifyPlaylistTracks",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "playlist_id": {
+                      "description": "The Spotify ID or URI of the playlist. Example: '3cEYpjA9oz9GiPac4AsH4n' or 'spotify:playlist:3cEYpjA9oz9GiPac4AsH4n'",
+                      "title": "Playlist Id",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "description": "The maximum number of tracks to return. Default: 20. Maximum: 50.",
+                      "maximum": 50,
+                      "minimum": 1,
+                      "title": "Limit",
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "default": 0,
+                      "description": "The index of the first track to return. Default: 0. Used for pagination.",
+                      "minimum": 0,
+                      "title": "Offset",
+                      "type": "integer"
+                    },
+                    "market": {
+                      "default": "US",
+                      "description": "An ISO 3166-1 alpha-2 country code to filter available tracks by market. Example: 'US'",
+                      "title": "Market",
+                      "type": "string"
+                    },
+                    "session_id": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "default": null,
+                      "description": "Session ID from previous authorization if accessing a private playlist. Not required for public playlists.",
+                      "title": "Session Id"
+                    }
+                  },
+                  "required": [
+                    "playlist_id"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/GetSeveralTracks": {
+        "post": {
+          "description": "Gets detailed Spotify catalog information for multiple tracks based on their Spotify IDs.\nUses client credentials flow (no user auth required).\nMaximum: 50 tracks per request.",
+          "operationId": "GetSeveralTracks",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "track_ids": {
+                      "description": "A list of Spotify track IDs or URIs. Maximum: 50 IDs.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 50,
+                      "title": "Track Ids",
+                      "type": "array"
+                    },
+                    "market": {
+                      "default": "US",
+                      "description": "An ISO 3166-1 alpha-2 country code. If specified, returns content available in that market.",
+                      "title": "Market",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "track_ids"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/SearchTracks": {
+        "post": {
+          "description": "A tool for searching tracks on Spotify using various search parameters.\nReturns track information including name, artist, album, and popularity.",
+          "operationId": "SearchTracks",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "query": {
+                      "description": "The search query string. Can include track name, artist name, or both.",
+                      "title": "Query",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "default": 10,
+                      "description": "The maximum number of tracks to return (1-50).",
+                      "title": "Limit",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/AddTracksToPlaylist": {
+        "post": {
+          "description": "A tool for adding tracks to an existing Spotify playlist.\nRequires user authentication with playlist-modify-public and playlist-modify-private scopes.",
+          "operationId": "AddTracksToPlaylist",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "playlist_id": {
+                      "description": "The Spotify ID or URI of the playlist to add tracks to.",
+                      "title": "Playlist Id",
+                      "type": "string"
+                    },
+                    "track_ids": {
+                      "description": "List of Spotify track IDs or URIs to add to the playlist.",
+                      "items": {
+                        "type": "string"
+                      },
+                      "title": "Track Ids",
+                      "type": "array"
+                    },
+                    "position": {
+                      "default": null,
+                      "description": "Optional position to insert the tracks. If None, tracks are appended to the end.",
+                      "title": "Position",
+                      "type": "integer"
+                    },
+                    "state": {
+                      "description": "The session ID from the authorization process",
+                      "title": "State",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "playlist_id",
+                    "state",
+                    "track_ids"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/CreatePlaylist": {
+        "post": {
+          "description": "Creates a new playlist on Spotify.\nRequires user authorization token.",
+          "operationId": "CreatePlaylist",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "name": {
+                      "description": "Name of the playlist",
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "description": {
+                      "default": "",
+                      "description": "Description of the playlist",
+                      "title": "Description",
+                      "type": "string"
+                    },
+                    "public": {
+                      "default": true,
+                      "description": "Whether the playlist should be public",
+                      "title": "Public",
+                      "type": "boolean"
+                    },
+                    "state": {
+                      "description": "The session ID from the authorization process",
+                      "title": "State",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "state"
+                  ],
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/GetAuthUrl": {
+        "post": {
+          "description": "Generates the Spotify authorization URL for OAuth flow.",
+          "operationId": "GetAuthUrl",
+          "x-openai-isConsequential": false,
+          "parameters": [],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {},
+                  "type": "object",
+                  "required": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {},
+      "securitySchemes": {
+        "apiKey": {
+          "type": "apiKey"
+        }
+      }
+    }
+  }

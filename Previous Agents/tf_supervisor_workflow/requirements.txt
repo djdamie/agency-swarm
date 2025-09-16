@@ -1,0 +1,11 @@
+langchain
+langgraph
+langchain-groq
+langsmith
+pydantic
+python-dotenv
+langchain-openai
+langchain-anthropic
+copilotkit>=0.1.0
+fastapi
+uvicorn

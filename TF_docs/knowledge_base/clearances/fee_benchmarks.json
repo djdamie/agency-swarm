@@ -1,0 +1,90 @@
+{
+  "synch_a": {
+    "budget_range": "0-5000",
+    "margin": 0.5,
+    "typical_fees": {
+      "emerging_artist": {
+        "sync": "500-1500",
+        "master": "500-1500",
+        "total": "1000-3000"
+      },
+      "established_indie": {
+        "sync": "1000-2500",
+        "master": "1000-2500", 
+        "total": "2000-5000"
+      }
+    },
+    "negotiation_tips": [
+      "Emphasize promotional value",
+      "Offer social media amplification",
+      "Quick payment terms help"
+    ]
+  },
+  "synch_b": {
+    "budget_range": "5000-50000",
+    "margin": 0.4,
+    "typical_fees": {
+      "established_artist": {
+        "sync": "5000-15000",
+        "master": "5000-15000",
+        "total": "10000-30000"
+      },
+      "hit_song_catalog": {
+        "sync": "10000-25000",
+        "master": "10000-25000",
+        "total": "20000-50000"
+      }
+    },
+    "negotiation_tips": [
+      "Bundle multiple territories for better rate",
+      "Longer terms often reduce annual cost",
+      "Consider most favored nations clauses"
+    ]
+  },
+  "synch_c": {
+    "budget_range": "50000+",
+    "margin": 0.3,
+    "typical_fees": {
+      "current_hit": {
+        "sync": "25000-50000",
+        "master": "25000-50000",
+        "total": "50000-100000"
+      },
+      "iconic_track": {
+        "sync": "50000-150000",
+        "master": "50000-150000",
+        "total": "100000-300000"
+      }
+    },
+    "negotiation_tips": [
+      "Global rights command premium but save on admin",
+      "Exclusivity periods can reduce fees",
+      "Consider step deals for campaign performance"
+    ]
+  },
+  "factors_affecting_price": {
+    "increase_factors": [
+      "Worldwide territory (+20-50%)",
+      "Competitor exclusivity (+25-40%)",
+      "Current chart position (+50-100%)",
+      "Iconic/heritage artist (+40-80%)",
+      "Rush clearance (<48hrs) (+20-30%)"
+    ],
+    "decrease_factors": [
+      "Limited media (online only) (-20-30%)",
+      "Short term (<6 months) (-15-25%)",
+      "Regional territory only (-30-40%)",
+      "Instrumental version (-10-20%)",
+      "Bundle deal (multiple tracks) (-15-25%)"
+    ]
+  },
+  "by_media_type": {
+    "tv_national": "Base rate",
+    "tv_cable": "70-80% of base",
+    "online_only": "50-70% of base",
+    "social_only": "30-50% of base",
+    "radio": "40-60% of base",
+    "cinema": "80-100% of base",
+    "all_media": "120-150% of base"
+  }
+}

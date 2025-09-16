@@ -10,7 +10,12 @@ from agency_swarm import Agent, RunContextWrapper, function_tool
 from tf_agents.instructions import BRIEF_ANALYZER_INSTRUCTIONS
 from tf_agents.prompts import BRIEF_ANALYZER_PROMPT
 from tf_agents.state import get_state, set_brief_analysis
-from tf_agents.tools.hitl import BriefEnhancer, record_analysis_iteration, record_missing_info
+from tf_agents.tools.hitl import (
+    BriefEnhancer,
+    record_analysis_iteration,
+    record_missing_info,
+    format_missing_info_summary,
+)
 from tf_agents.utils import call_json_llm
 
 __all__ = ["create_brief_analyzer_agent"]
@@ -61,7 +66,11 @@ async def submit_brief_analysis(
     record_missing_info(context, analysis)
     iteration = len(get_state(context).analysis_sessions) + 1
     record_analysis_iteration(context, analysis, iteration)
-    return "Brief analysis stored"
+
+    summary = format_missing_info_summary(context)
+    if summary.strip() == "No outstanding missing information.":
+        return "Brief analysis stored. No outstanding missing information."
+    return "Brief analysis stored. Outstanding items:\n" + summary
 
 
 @function_tool()
@@ -83,19 +92,35 @@ async def merge_additional_info(wrapper: RunContextWrapper, additional_info_json
     record_missing_info(context, enhanced)
     iteration = len(state.analysis_sessions) + 1
     record_analysis_iteration(context, enhanced, iteration, additional_info)
-    return "Analysis updated with additional information"
+
+    summary = format_missing_info_summary(context)
+    if summary.strip() == "No outstanding missing information.":
+        return "Analysis updated. No remaining missing information."
+    return "Analysis updated. Outstanding items:\n" + summary
+
+
+@function_tool()
+async def show_missing_info(wrapper: RunContextWrapper) -> str:
+    """Display outstanding missing information requests."""
+    return format_missing_info_summary(wrapper.context)
 
 
 def create_brief_analyzer_agent(*, name: str = "BriefAnalyzer", **agent_kwargs) -> Agent:
     instructions = (
         BRIEF_ANALYZER_INSTRUCTIONS
-        + "\n\nUse the `submit_brief_analysis` tool with either the raw brief text (preferred) or a JSON payload."
+        + "\n\nUse `submit_brief_analysis` with the raw brief text (preferred) or a JSON payload." \
+        + " After submission, call `show_missing_info` to surface outstanding questions."
         + " If follow-up information is provided, use `merge_additional_info` to keep the analysis current."
     )
     return Agent(
         name=name,
         description="Analyzes client briefs and captures structured project data",
         instructions=instructions,
-        tools=[generate_brief_analysis, submit_brief_analysis, merge_additional_info],
+        tools=[
+            generate_brief_analysis,
+            submit_brief_analysis,
+            merge_additional_info,
+            show_missing_info,
+        ],
         **agent_kwargs,
     )

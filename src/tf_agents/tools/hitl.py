@@ -20,6 +20,7 @@ __all__ = [
     "BriefEnhancer",
     "record_missing_info",
     "record_analysis_iteration",
+    "format_missing_info_summary",
 ]
 
 
@@ -217,3 +218,25 @@ def record_analysis_iteration(context, analysis: Dict[str, Any], iteration: int,
         "user_input_provided": additional_info,
     }
     append_analysis_session(context, session)
+
+
+def format_missing_info_summary(context) -> str:
+    """Return a human-readable summary of outstanding missing information."""
+    state = get_state(context)
+    if not state.missing_info_requests:
+        return "No outstanding missing information."
+
+    lines = []
+    for request in state.missing_info_requests:
+        priority = request.get("priority", "optional").upper()
+        lines.append(f"[{priority}] {request.get('created_at', '')}")
+        for field, description in request.get("field_descriptions", {}).items():
+            lines.append(f"  • {description}")
+        if request.get("suggested_values"):
+            lines.append("    Suggested values:")
+            for field, suggestions in request["suggested_values"].items():
+                if suggestions:
+                    lines.append(f"      - {field}: {', '.join(suggestions)}")
+        lines.append("")
+
+    return "\n".join(lines).strip()

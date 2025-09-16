@@ -14,4 +14,5 @@ def test_brief_analyzer_agent_tools(brief_agent):
         "generate_brief_analysis",
         "submit_brief_analysis",
         "merge_additional_info",
+        "show_missing_info",
     }

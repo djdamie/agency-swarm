@@ -84,6 +84,7 @@
 - Centralize token handling by exposing `get_access_token` through a shared helper (e.g., `src/tf_agents/utils/chartmetric_auth.py`); load `CHARTMETRIC_REFRESH_TOKEN` from `.env`/secret manager at startup and reuse cached token.
 - Add lightweight integration tests that stub HTTP responses to confirm adapter wiring, and document required env vars in `.env.example`.
 - Optionally mirror functionality as MCP server later; initial milestone keeps direct BaseTool usage for faster integration.
+- ✅ Updated validators to Pydantic `@field_validator`.
 
 ### Spotify Tooling
 - Convert OpenAPI schemas in `Previous Agents/Agent_Schemas/Spotify_schema.json` into Agent `schemas_folder`; leverage `ToolFactory.from_openapi_schema` to auto-generate tools.
@@ -139,7 +140,7 @@
 
 ### AG-UI / Frontend Integration
 - Leverage `CopilotDemoLauncher` as reference to embed Agency into client-facing UI; replace demo agents with TF Supervisor agency factory. ✅ `tf_agents.ui.copilot.launch_copilot()` now launches the tailored Copilot experience.
-- Extend UI to surface HITL requests from context (display missing info prompts, allow user input to feed back into agency).
+- Extend UI to surface HITL requests from context (display missing info prompts, allow user input to feed back into agency). ✅ `show_missing_info` tool available for Copilot to display outstanding fields.
 - Serve UI behind existing Caddy reverse proxy; reuse Open-WebUI or dedicate AG-UI port (e.g., 8009).
 - Use `Agency.get_agency_structure()` to provide ReactFlow data for visualizing workflow inside Open-WebUI panels if desired.
 - Ensure websocket/API endpoints honor client auth (Supabase session or internal SSO).

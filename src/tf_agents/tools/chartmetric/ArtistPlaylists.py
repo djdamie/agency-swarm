@@ -2,7 +2,7 @@ import json
 from typing import ClassVar, Literal, Optional, List, Dict, Any
 import requests
 from agency_swarm.tools import BaseTool
-from pydantic import Field, validator
+from pydantic import Field, field_validator, ValidationInfo
 from tf_agents.utils import get_access_token
 import time
 
@@ -94,26 +94,29 @@ class ArtistPlaylists(BaseTool):
     last_call_time: ClassVar[float] = 0
     rate_limit_seconds: ClassVar[float] = 2
 
-    @validator('sortColumn')
-    def validate_sort_column(cls, v, values):
-        if v is None:
-            return v
-        
-        platform = values.get('platform')
-        status = values.get('status')
-        
+    @field_validator('sortColumn')
+    @classmethod
+    def validate_sort_column(cls, value, info: ValidationInfo):
+        if value is None:
+            return value
+
+        data = info.data
+        platform = data.get('platform')
+        status = data.get('status')
+
         if platform and status:
             valid_columns = VALID_SORT_COLUMNS.get(platform, {}).get(status, [])
-            if v not in valid_columns:
-                raise ValueError(f"Invalid sortColumn '{v}' for {platform}/{status}. Valid options: {valid_columns}")
-        
-        return v
-    
-    @validator('sortOrderDesc')
-    def validate_sort_order(cls, v, values):
-        if v is not None and values.get('sortColumn') is None:
+            if value not in valid_columns:
+                raise ValueError(f"Invalid sortColumn '{value}' for {platform}/{status}. Valid options: {valid_columns}")
+
+        return value
+
+    @field_validator('sortOrderDesc')
+    @classmethod
+    def validate_sort_order(cls, value, info: ValidationInfo):
+        if value is not None and info.data.get('sortColumn') is None:
             raise ValueError("sortOrderDesc can only be set when sortColumn is specified")
-        return v
+        return value
 
     def run(self) -> str:
         """Execute the API request to get artist playlists"""

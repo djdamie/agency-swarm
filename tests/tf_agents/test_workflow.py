@@ -2,8 +2,6 @@ import json
 import pytest
 
 from tf_agents.workflow import process_brief
-
-
 @pytest.mark.asyncio
 async def test_process_brief(monkeypatch):
     responses = iter([
@@ -44,4 +42,5 @@ async def test_process_brief(monkeypatch):
 
     assert result["analysis"]["business_brief"]["client"] == "Test Client"
     assert result["strategy"]["project_type"] == "Synch A-Type"
+    assert result["analysis"].get("missing_information") is not None
     assert result["final_summary"]

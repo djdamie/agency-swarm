@@ -410,7 +410,9 @@ class AguiAdapter:
             if output_text:
                 return MessagesSnapshotEvent(
                     type=EventType.MESSAGES_SNAPSHOT,
-                    messages=[ToolMessage(id=call_id, role="tool", content=output_text, tool_call_id=call_id)],
+                    messages=[
+                        AssistantMessage(id=f"assistant-{call_id}", role="assistant", content=output_text)
+                    ],
                 )
             logger.warning("run_item_stream_event ignored: tool_output without output text")
             return None

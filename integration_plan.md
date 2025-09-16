@@ -140,10 +140,11 @@
 
 ### AG-UI / Frontend Integration
 - Leverage `CopilotDemoLauncher` as reference to embed Agency into client-facing UI; replace demo agents with TF Supervisor agency factory. ✅ `tf_agents.ui.copilot.launch_copilot()` now launches the tailored Copilot experience.
-- Extend UI to surface HITL requests from context (display missing info prompts, allow user input to feed back into agency). ✅ `show_missing_info` tool available for Copilot to display outstanding fields.
+- Extend UI to surface HITL requests from context (display missing info prompts, allow user input to feed back into agency). ✅ Brief analyzer now replies with missing-info summaries automatically and `show_missing_info` remains available for manual refresh.
 - Serve UI behind existing Caddy reverse proxy; reuse Open-WebUI or dedicate AG-UI port (e.g., 8009).
 - Use `Agency.get_agency_structure()` to provide ReactFlow data for visualizing workflow inside Open-WebUI panels if desired.
 - Ensure websocket/API endpoints honor client auth (Supabase session or internal SSO).
+- ⏳ Implement Copilot generative UI component for HITL replies (render form, send data to `merge_additional_info`).
 
 ### MCP Integration
 - Defer MCP server for Chartmetric until core agents stable; evaluate converting tools into MCP once Agency in production to enable cross-project use.
